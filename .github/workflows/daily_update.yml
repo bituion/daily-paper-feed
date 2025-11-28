@@ -37,6 +37,6 @@ jobs:
         git config --global user.name 'PaperBot'
         git config --global user.email 'bot@noreply.github.com'
         git add papers_data.json
-        # 如果文件有变化则提交，没变化则跳过，防止报错
         git commit -m "Auto-update: new papers fetched [skip ci]" || echo "No changes to commit"
-        git push
+        # 强制推送到 main 分支，解决 Detached HEAD 问题
+        git push origin HEAD:main
