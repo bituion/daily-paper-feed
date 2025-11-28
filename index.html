@@ -197,14 +197,10 @@
                         
                         <div class="h-[250px] overflow-y-auto pr-2 custom-scrollbar">
                             <div v-if="activeTab === 'short'" class="space-y-4">
-                                <div v-for="c in shortComments" :key="c.id" class="flex gap-3 text-sm">
-                                    <img :src="c.avatar" class="w-8 h-8 rounded-full bg-slate-200 flex-shrink-0">
-                                    <div class="flex-1 bg-slate-50 p-2.5 rounded-2xl rounded-tl-none">
-                                        <div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-700 text-xs">{{ c.user }}</span><span class="text-[10px] text-slate-400">{{ c.time }}</span></div>
-                                        <p class="text-slate-600 text-xs leading-normal whitespace-pre-wrap">{{ c.content }}</p>
-                                    </div>
+                                <!-- Giscus Container -->
+                                <div class="giscus-frame min-h-[200px]">
+                                    <div id="giscus-container"></div>
                                 </div>
-                                <div v-if="shortComments.length===0" class="text-center text-slate-400 text-xs mt-10">No comments yet.</div>
                             </div>
 
                             <div v-if="activeTab === 'qa'" class="space-y-4">
@@ -250,11 +246,9 @@
 
                 <div v-if="activeTab !== 'private'" class="p-4 border-t border-slate-200 bg-white">
                     <div v-if="activeTab === 'short'">
-                        <div class="flex gap-2 items-start">
-                            <div class="flex-1">
-                                <textarea v-model="newCommentInput" @keyup.ctrl.enter="postItem" placeholder="Write a comment..." class="w-full h-12 bg-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 resize-none"></textarea>
-                            </div>
-                            <button @click="postItem" class="bg-indigo-600 text-white px-3 h-12 rounded-lg text-xs font-bold hover:bg-indigo-700 transition">Send</button>
+                        <!-- Giscus handles input automatically, so we hide the custom input -->
+                        <div class="text-center text-xs text-slate-400">
+                            Powered by <a href="https://giscus.app" target="_blank" class="text-indigo-500 hover:underline">Giscus</a>
                         </div>
                     </div>
 
@@ -412,17 +406,47 @@
             const toggleLike = (paper) => { paper.isLiked = !paper.isLiked; paper.likes += paper.isLiked ? 1 : -1; };
             const toggleCollect = (paper) => { paper.isCollected = !paper.isCollected; paper.collections += paper.isCollected ? 1 : -1; };
             
+            const toggleCollect = (paper) => { paper.isCollected = !paper.isCollected; paper.collections += paper.isCollected ? 1 : -1; };
+            
+            const loadGiscus = (paperId) => {
+                const container = document.getElementById('giscus-container');
+                if (!container) return;
+                
+                container.innerHTML = ''; // Clear previous
+                
+                const script = document.createElement('script');
+                script.src = "https://giscus.app/client.js";
+                script.setAttribute("data-repo", "bituion/daily-paper-feed");
+                script.setAttribute("data-repo-id", "R_kgDOQesoWw"); // 替换为你的 Repo ID
+                script.setAttribute("data-category", "Announcements"); // 替换为你的 Category Name
+                script.setAttribute("data-category-id", "DIC_kwDOQesoW84CzJ7F"); // 替换为你的 Category ID
+                script.setAttribute("data-mapping", "specific");
+                script.setAttribute("data-term", paperId);
+                script.setAttribute("data-reactions-enabled", "1");
+                script.setAttribute("data-emit-metadata", "0");
+                script.setAttribute("data-input-position", "top");
+                script.setAttribute("data-theme", "light");
+                script.setAttribute("data-lang", "zh-CN");
+                script.setAttribute("crossorigin", "anonymous");
+                script.async = true;
+                
+                container.appendChild(script);
+            };
+
             const openModal = (paper) => { 
                 selectedPaper.value = paper; 
                 activeTab.value = 'short'; 
                 noteMode.value = 'edit'; 
                 longMode.value = 'edit';
-                document.body.style.overflow = 'hidden'; 
+                document.body.style.overflow = 'hidden';
+                
+                // Load Giscus after DOM update
+                nextTick(() => {
+                    loadGiscus(paper.id);
+                });
             };
             
-            const closeModal = () => { selectedPaper.value = null; document.body.style.overflow = 'auto'; };
-            const toggleTag = (tag) => { if (filters.tags.includes(tag)) filters.tags = filters.tags.filter(t => t !== tag); else filters.tags.push(tag); };
-            const addUserTag = () => { const tag = newTagInput.value.trim(); if(tag) selectedPaper.value.userTags.push(tag); newTagInput.value = ""; };
+            const closeModal = () => { selectedPaper.value = null; document.body.style.overflow = 'auto'; };rTags.push(tag); newTagInput.value = ""; };
             const removeUserTag = (p, i) => p.userTags.splice(i, 1);
             const resetFilter = () => { filters.tags = []; filters.query = ""; filters.timeRange = "all"; };
             const renderMD = (text) => marked.parse(text);
