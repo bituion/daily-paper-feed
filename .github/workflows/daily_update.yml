@@ -2,9 +2,9 @@ name: Daily ArXiv Update
 
 # 触发条件
 on:
-  schedule:
-    # 每天 UTC 时间 0:00 运行 (北京时间 8:00)
-    - cron: '0 0 * * *'
+  # schedule:
+  #   # 每天 UTC 时间 0:00 运行 (北京时间 8:00)
+  #   - cron: '0 0 * * *'
   workflow_dispatch: # 允许你在网页上手动点击按钮立即运行测试
 
 permissions:

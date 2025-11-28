@@ -64,8 +64,9 @@
                 </div>
             </div>
 
-            <div class="w-9 h-9 bg-slate-200 rounded-full overflow-hidden border border-slate-300 flex-shrink-0">
+            <div class="w-9 h-9 bg-slate-200 rounded-full overflow-hidden border border-slate-300 flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-indigo-400 transition relative" @click="openProfile">
                 <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="User">
+                <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
             </div>
         </div>
 
@@ -245,6 +246,8 @@
             const newCommentInput = ref("");
             
             const noteMode = ref("edit");
+            const showProfile = ref(false);
+            const profileTab = ref('collections');
             
             const isAllExpanded = ref(false);
             const isAllTranslated = ref(false);
@@ -314,6 +317,9 @@
             const shortComments = computed(() => selectedPaper.value ? selectedPaper.value.comments.filter(c => c.type === 'short') : []);
             const qaList = computed(() => selectedPaper.value ? (selectedPaper.value.qa || []) : []);
             const longReviews = computed(() => selectedPaper.value ? selectedPaper.value.comments.filter(c => c.type === 'long') : []);
+            
+            const myLikes = computed(() => papers.value.filter(p => p.isLiked));
+            const myCollections = computed(() => papers.value.filter(p => p.isCollected));
 
             // --- Methods ---
             const toggleGlobalExpand = () => { isAllExpanded.value = !isAllExpanded.value; papers.value.forEach(p => p.expanded = isAllExpanded.value); };
@@ -393,6 +399,7 @@
                 selectedPaper.value = paper; 
                 activeTab.value = 'discussion'; 
                 noteMode.value = 'edit'; 
+                showProfile.value = false; // Close profile if open
                 document.body.style.overflow = 'hidden';
                 
                 // Load Giscus after DOM update
@@ -400,6 +407,8 @@
                     loadGiscus(paper.id, 'discussion');
                 });
             };
+            
+            const openProfile = () => { showProfile.value = true; };
             
             const closeModal = () => { selectedPaper.value = null; document.body.style.overflow = 'auto'; };
             const addUserTag = () => { if (!newTagInput.value.trim()) return; selectedPaper.value.userTags.push(newTagInput.value.trim()); newTagInput.value = ""; };
@@ -416,7 +425,8 @@
                 toggleGlobalExpand, toggleGlobalTranslate, addTagToPool, removeTagFromPool,
                 openModal, closeModal, toggleTag, toggleLike, toggleCollect, switchTab,
                 addUserTag, removeUserTag, resetFilter, newTagInput,
-                noteMode, userAddedTagPool, renderMD, isLoading
+                noteMode, userAddedTagPool, renderMD, isLoading,
+                showProfile, profileTab, myLikes, myCollections, openProfile
             };
         },
         updated() { lucide.createIcons(); }
