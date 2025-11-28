@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Paper Daily - Auto Feed</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .masonry-grid { column-count: 1; column-gap: 1.5rem; }
+        @media (min-width: 640px) { .masonry-grid { column-count: 2; } }
+        @media (min-width: 1024px) { .masonry-grid { column-count: 3; } }
+        @media (min-width: 1280px) { .masonry-grid { column-count: 4; } }
+        .break-inside-avoid { break-inside: avoid; }
+        .pdf-frame { border: none; width: 100%; height: 100%; }
+        .expand-enter-active, .expand-leave-active { transition: all 0.5s ease-in-out; max-height: 2500px; opacity: 1; overflow: hidden; }
+        .expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; }
+        .prose-compact p { margin-bottom: 0.25em; }
+        .prose-compact pre { padding: 0.25rem; background: #f3f4f6; }
+        .btn-active { transform: scale(0.95); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+<div id="app" class="min-h-screen flex flex-col">
+
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-6 py-3 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-2 cursor-pointer" @click="resetFilter">
+                <div class="w-9 h-9 bg-slate-900 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg">P</div>
+                <h1 class="text-xl font-bold tracking-tight text-slate-900 hidden md:block">Paper Daily</h1>
+            </div>
+            
+            <div class="flex-1 max-w-7xl flex flex-wrap items-center gap-2 md:gap-4">
+                <div class="relative flex-1 min-w-[200px] group">
+                    <i data-lucide="search" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4 group-focus-within:text-indigo-500 transition"></i>
+                    <input v-model="filters.query" type="text" placeholder="Search Title, Author..." 
+                        class="w-full bg-slate-100 border-none rounded-full py-2 pl-9 pr-4 text-sm focus:ring-2 focus:ring-indigo-100 focus:bg-white transition">
+                </div>
+
+                <div class="flex items-center gap-2 border-l border-slate-200 pl-4">
+                    <button @click="toggleGlobalExpand" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition text-xs font-bold shadow-sm bg-white border-slate-200 text-slate-600 hover:bg-slate-50">
+                        <i :class="isAllExpanded ? 'rotate-180' : ''" data-lucide="chevrons-down" class="w-3.5 h-3.5 transition-transform"></i> {{ isAllExpanded ? 'Collapse' : 'Expand' }}
+                    </button>
+                    <button @click="toggleGlobalTranslate" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition text-xs font-bold shadow-sm bg-white border-slate-200 text-slate-600 hover:bg-slate-50">
+                        <i data-lucide="languages" class="w-3.5 h-3.5"></i> {{ isAllTranslated ? 'Original' : 'Translate' }}
+                    </button>
+                </div>
+
+                <div class="flex gap-2">
+                    <select v-model="filters.timeRange" class="bg-slate-100 rounded-lg px-3 py-2 text-xs font-medium text-slate-600 border-none cursor-pointer hover:bg-slate-200 focus:ring-0">
+                        <option value="all">📅 All Time</option>
+                        <option value="week">📅 Last Week</option>
+                        <option value="month">📅 Last Month</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="w-9 h-9 bg-slate-200 rounded-full overflow-hidden border border-slate-300 flex-shrink-0">
+                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="User">
+            </div>
+        </div>
+
+        <div class="mt-3 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            <span v-if="filters.tags.length > 0" class="text-xs text-slate-400 whitespace-nowrap">Active:</span>
+            
+            <button v-for="tag in filters.tags" :key="tag" @click="toggleTag(tag)"
+                class="px-2 py-1 bg-slate-800 text-white rounded text-xs font-bold flex items-center gap-1 hover:bg-black transition shadow-sm whitespace-nowrap">
+                #{{ tag }} <i data-lucide="x" class="w-3 h-3"></i>
+            </button>
+            <div v-if="filters.tags.length > 0" class="w-[1px] h-4 bg-slate-300 mx-1"></div>
+            
+            <button v-for="tag in availableTags" :key="tag" @click="toggleTag(tag)"
+                class="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition flex items-center gap-1 group bg-white text-slate-500 border border-slate-200 hover:bg-slate-50">
+                #{{ tag }}
+                <span v-if="userAddedTagPool.includes(tag)" @click.stop="removeTagFromPool(tag)" 
+                    class="ml-1 -mr-1 w-4 h-4 rounded-full flex items-center justify-center hover:bg-red-100 text-slate-300 hover:text-red-500 transition-colors">
+                    <i data-lucide="x" class="w-3 h-3"></i>
+                </span>
+            </button>
+
+             <div class="flex items-center ml-2 border-l border-slate-200 pl-2">
+                <input v-model="customFilterInput" @keyup.enter="addTagToPool" type="text" placeholder="+ Tag to Pool" 
+                    class="w-24 px-3 py-1 text-xs bg-indigo-50 border border-indigo-200 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:w-32 transition-all placeholder:text-indigo-400 text-indigo-700">
+             </div>
+        </div>
+    </header>
+
+    <main class="flex-1 container mx-auto px-4 py-6">
+        
+        <div v-if="isLoading" class="flex flex-col items-center justify-center py-20 text-slate-400 space-y-4">
+            <div class="relative w-12 h-12">
+                <div class="absolute inset-0 border-4 border-slate-200 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-indigo-500 rounded-full border-t-transparent animate-spin"></div>
+            </div>
+            <p class="text-sm font-medium animate-pulse">Syncing with ArXiv & DeepSeek...</p>
+        </div>
+
+        <div v-else class="masonry-grid">
+            <div v-for="paper in filteredPapers" :key="paper.id" @click="openModal(paper)"
+                class="break-inside-avoid bg-white rounded-xl overflow-hidden mb-6 shadow-sm hover:shadow-2xl hover:border-indigo-300 hover:-translate-y-1 transition duration-300 group border border-slate-200 relative cursor-pointer">
+                
+                <div :class="paper.coverGradient" class="p-4 relative">
+                    <div class="h-24 flex flex-col justify-end">
+                        <h3 class="text-white font-bold text-lg leading-snug drop-shadow-md line-clamp-3 font-sans">{{ paper.orig_title }}</h3>
+                    </div>
+                </div>
+
+                <div class="p-4">
+                    <div class="flex flex-wrap gap-1 mb-3">
+                        <span v-for="tag in paper.tags.slice(0,3)" :key="tag" class="px-1.5 py-0.5 bg-slate-100 text-slate-500 text-[10px] rounded">#{{ tag }}</span>
+                        <span v-for="tag in paper.userTags" :key="tag" class="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 text-[10px] rounded border border-yellow-200">#{{ tag }}</span>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-lg p-3 text-xs mb-3 border border-slate-100" @click.stop>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-slate-700 flex items-center gap-1">{{ paper.expanded ? (paper.isTranslated ? '📌 摘要 (译)' : '📝 Abstract') : '💡 Innovation' }}</span>
+                            <div class="flex gap-2">
+                                <button v-if="paper.expanded" @click="paper.isTranslated = !paper.isTranslated" class="text-[10px] px-1.5 py-0.5 rounded border transition flex items-center gap-1 bg-white text-slate-500 border-slate-200 hover:text-indigo-600"><i data-lucide="languages" class="w-3 h-3"></i> {{ paper.isTranslated ? 'EN' : 'CN' }}</button>
+                                <button @click="paper.expanded = !paper.expanded" class="text-indigo-600 hover:text-indigo-800 flex items-center gap-0.5 font-medium">{{ paper.expanded ? '收起' : '展开' }} <i :class="paper.expanded ? 'rotate-180' : ''" data-lucide="chevron-down" class="w-3 h-3 transition-transform"></i></button>
+                            </div>
+                        </div>
+                        <div v-if="!paper.expanded"><p class="text-slate-600 line-clamp-3 leading-relaxed">{{ paper.summary.innovation }}</p></div>
+                        <transition name="expand"><div v-if="paper.expanded" class="mt-2 pt-2 border-t border-slate-200 text-slate-600 leading-relaxed text-justify">{{ paper.isTranslated ? paper.abstract_zh : paper.abstract_en }}</div></transition>
+                    </div>
+
+                    <div class="flex justify-between items-center text-xs text-slate-400 pt-2 border-t border-slate-50">
+                        <span class="font-mono">{{ paper.date }}</span>
+                        <div class="flex gap-3">
+                            <span class="flex items-center gap-1" :class="paper.isLiked ? 'text-red-500' : ''"><i data-lucide="heart" class="w-3 h-3" :class="paper.isLiked ? 'fill-current' : ''"></i> {{ paper.likes }}</span>
+                            <span class="flex items-center gap-1" :class="paper.isCollected ? 'text-yellow-500' : ''"><i data-lucide="star" class="w-3 h-3" :class="paper.isCollected ? 'fill-current' : ''"></i> {{ paper.collections }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div v-if="!isLoading && filteredPapers.length === 0" class="text-center py-20 text-slate-400">
+            <div class="mb-2"><i data-lucide="file-x-2" class="w-10 h-10 mx-auto opacity-50"></i></div>
+            <p>No papers found matching your criteria.</p>
+        </div>
+    </main>
+
+    <div v-if="selectedPaper" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-2 md:p-6" @click.self="closeModal">
+        <div class="bg-white w-full h-full max-w-[1400px] rounded-2xl shadow-2xl flex overflow-hidden relative flex-col md:flex-row">
+            <button @click="closeModal" class="absolute top-3 right-3 z-30 bg-white hover:bg-slate-100 p-2 rounded-full shadow border border-slate-100 transition"><i data-lucide="x" class="w-5 h-5 text-slate-600"></i></button>
+
+            <div class="flex-1 bg-slate-100 relative hidden md:block border-r border-slate-200">
+                <iframe class="pdf-frame" :src="`https://docs.google.com/viewer?url=${selectedPaper.pdf_url}&embedded=true`"></iframe>
+            </div>
+
+            <div class="w-full md:w-[480px] flex-shrink-0 flex flex-col h-full bg-white z-20">
+                <div class="flex-1 overflow-y-auto p-6 custom-scrollbar">
+                    <div class="mb-5">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span v-for="tag in selectedPaper.tags" class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">#{{ tag }}</span>
+                            <span v-for="(tag, idx) in selectedPaper.userTags" :key="tag" class="text-xs font-bold text-yellow-700 bg-yellow-100 px-2 py-1 rounded flex items-center gap-1 group cursor-pointer border border-yellow-200" @click="removeUserTag(selectedPaper, idx)">#{{ tag }} <i data-lucide="x" class="w-3 h-3 opacity-50 group-hover:opacity-100"></i></span>
+                            <div class="relative flex items-center"><input v-model="newTagInput" @keyup.enter="addUserTag" type="text" placeholder="+Tag" class="text-xs bg-transparent border-b border-slate-300 focus:border-indigo-500 focus:outline-none w-16 px-1 py-0.5 placeholder:text-slate-400"></div>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-900 leading-snug mb-2 font-sans">{{ selectedPaper.orig_title }}</h2>
+                        <div class="text-xs text-slate-400 font-mono mb-4">Published on {{ selectedPaper.date }}</div>
+                        <div class="flex items-start gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                            <div class="mt-1"><i data-lucide="users" class="w-4 h-4 text-slate-400"></i></div><div class="text-sm"><div class="font-semibold text-slate-700">{{ selectedPaper.authors.join(", ") }}</div></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mb-6 text-sm relative">
+                         <div class="flex justify-between items-end mb-2">
+                             <h3 class="font-bold text-slate-800">Abstract</h3>
+                             <button @click="selectedPaper.isTranslated = !selectedPaper.isTranslated" class="text-xs text-indigo-600 border border-indigo-200 px-2 py-0.5 rounded hover:bg-indigo-50 flex items-center gap-1"><i data-lucide="languages" class="w-3 h-3"></i> {{ selectedPaper.isTranslated ? 'Show Original' : 'Translate' }}</button>
+                         </div>
+                         <div class="p-4 bg-slate-50 rounded-lg border border-slate-100 text-slate-700 leading-relaxed text-justify">{{ selectedPaper.isTranslated ? selectedPaper.abstract_zh : selectedPaper.abstract_en }}</div>
+                         <div class="mt-4 p-3 bg-yellow-50/50 rounded-lg border border-yellow-100 text-slate-700 text-xs"><span class="font-bold text-yellow-700 block mb-1">💡 AI Innovation</span>{{ selectedPaper.summary.innovation }}</div>
+                    </div>
+
+                    <div class="border-t border-slate-200 pt-4">
+                        <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
+                            <div class="flex gap-6 overflow-x-auto scrollbar-hide">
+                                <button @click="activeTab = 'short'" :class="activeTab === 'short' ? 'text-indigo-600 font-bold border-b-2 border-indigo-500' : 'text-slate-400'" class="pb-2 text-sm transition whitespace-nowrap flex items-center gap-1"><i data-lucide="message-square" class="w-4 h-4"></i> {{ shortComments.length }}</button>
+                                <button @click="activeTab = 'qa'" :class="activeTab === 'qa' ? 'text-orange-600 font-bold border-b-2 border-orange-500' : 'text-slate-400'" class="pb-2 text-sm transition whitespace-nowrap flex items-center gap-1"><i data-lucide="help-circle" class="w-4 h-4"></i> {{ qaList.length }}</button>
+                                <button @click="activeTab = 'long'" :class="activeTab === 'long' ? 'text-purple-600 font-bold border-b-2 border-purple-500' : 'text-slate-400'" class="pb-2 text-sm transition whitespace-nowrap flex items-center gap-1"><i data-lucide="file-text" class="w-4 h-4"></i> {{ longReviews.length }}</button>
+                                <button @click="activeTab = 'private'" :class="activeTab === 'private' ? 'text-yellow-600 font-bold border-b-2 border-yellow-500' : 'text-slate-400'" class="pb-2 text-sm transition whitespace-nowrap flex items-center gap-1"><i data-lucide="sticky-note" class="w-4 h-4"></i></button>
+                            </div>
+                            <div class="flex gap-2 pb-1 flex-shrink-0">
+                                <button @click="toggleLike(selectedPaper)" class="flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full transition bg-slate-50 hover:bg-red-50 border border-slate-100" :class="selectedPaper.isLiked ? 'text-red-500 border-red-100' : 'text-slate-400'"><i data-lucide="heart" class="w-3.5 h-3.5" :class="selectedPaper.isLiked ? 'fill-current' : ''"></i> {{ selectedPaper.likes }}</button>
+                                <button @click="toggleCollect(selectedPaper)" class="flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full transition bg-slate-50 hover:bg-yellow-50 border border-slate-100" :class="selectedPaper.isCollected ? 'text-yellow-600 border-yellow-100' : 'text-slate-400'"><i data-lucide="star" class="w-3.5 h-3.5" :class="selectedPaper.isCollected ? 'fill-current' : ''"></i> {{ selectedPaper.collections }}</button>
+                            </div>
+                        </div>
+                        
+                        <div class="h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                            <div v-if="activeTab === 'short'" class="space-y-4">
+                                <div v-for="c in shortComments" :key="c.id" class="flex gap-3 text-sm">
+                                    <img :src="c.avatar" class="w-8 h-8 rounded-full bg-slate-200 flex-shrink-0">
+                                    <div class="flex-1 bg-slate-50 p-2.5 rounded-2xl rounded-tl-none">
+                                        <div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-700 text-xs">{{ c.user }}</span><span class="text-[10px] text-slate-400">{{ c.time }}</span></div>
+                                        <p class="text-slate-600 text-xs leading-normal whitespace-pre-wrap">{{ c.content }}</p>
+                                    </div>
+                                </div>
+                                <div v-if="shortComments.length===0" class="text-center text-slate-400 text-xs mt-10">No comments yet.</div>
+                            </div>
+
+                            <div v-if="activeTab === 'qa'" class="space-y-4">
+                                <div v-for="q in qaList" :key="q.id" class="bg-orange-50 border border-orange-100 rounded-lg p-3">
+                                    <div class="flex gap-2 items-start">
+                                        <div class="bg-orange-200 text-orange-800 text-[10px] font-bold px-1.5 rounded">Q</div>
+                                        <div class="flex-1">
+                                            <div class="flex justify-between text-xs mb-1"><span class="font-bold text-slate-700">{{ q.user }}</span><span class="text-slate-400">{{ q.time }}</span></div>
+                                            <div class="text-slate-700 text-sm font-medium prose prose-sm max-w-none" v-html="renderMD(q.content)"></div>
+                                        </div>
+                                    </div>
+                                    <div v-if="q.reply" class="mt-2 pl-6 border-l-2 border-orange-200">
+                                        <div class="flex gap-2 items-start">
+                                            <div class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-1.5 rounded">A</div>
+                                            <div class="text-slate-600 text-xs prose prose-sm max-w-none" v-html="renderMD(q.reply)"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-if="qaList.length===0" class="text-center text-slate-400 text-xs mt-10">No questions yet. Ask one!</div>
+                            </div>
+                            
+                            <div v-if="activeTab === 'long'" class="space-y-6">
+                                <div v-for="c in longReviews" :key="c.id" class="border border-slate-100 rounded-xl p-4 shadow-sm">
+                                    <div class="flex items-center gap-2 mb-3 border-b border-slate-50 pb-2"><img :src="c.avatar" class="w-6 h-6 rounded-full"><span class="font-bold text-sm text-slate-800">{{ c.title }}</span><span class="text-xs text-slate-400 ml-auto">{{ c.time }}</span></div>
+                                    <div class="prose prose-sm max-w-none text-slate-600 text-xs" v-html="renderMD(c.content)"></div>
+                                </div>
+                                <div v-if="longReviews.length===0" class="text-center text-slate-400 text-xs mt-10">No detailed reviews.</div>
+                            </div>
+                            
+                            <div v-if="activeTab === 'private'" class="h-full flex flex-col">
+                                <div class="flex justify-end gap-2 mb-2">
+                                    <button @click="noteMode = 'edit'" class="text-xs px-2 py-1 rounded transition" :class="noteMode === 'edit' ? 'bg-yellow-200 text-yellow-800 font-bold' : 'text-slate-400 hover:bg-slate-100'">✏️ Edit</button>
+                                    <button @click="noteMode = 'preview'" class="text-xs px-2 py-1 rounded transition" :class="noteMode === 'preview' ? 'bg-yellow-200 text-yellow-800 font-bold' : 'text-slate-400 hover:bg-slate-100'">👁️ Preview</button>
+                                </div>
+                                <textarea v-if="noteMode === 'edit'" v-model="selectedPaper.privateNote" placeholder="# My private thoughts..." class="flex-1 w-full p-4 bg-yellow-50/50 border border-yellow-200 rounded-xl text-sm text-slate-700 focus:ring-2 focus:ring-yellow-200 focus:outline-none resize-none font-mono"></textarea>
+                                <div v-else class="flex-1 w-full p-4 bg-yellow-50/30 border border-yellow-100 rounded-xl overflow-y-auto">
+                                    <div class="prose prose-sm max-w-none text-slate-700" v-html="renderMD(selectedPaper.privateNote || 'No content.')"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="activeTab !== 'private'" class="p-4 border-t border-slate-200 bg-white">
+                    <div v-if="activeTab === 'short'">
+                        <div class="flex gap-2 items-start">
+                            <div class="flex-1">
+                                <textarea v-model="newCommentInput" @keyup.ctrl.enter="postItem" placeholder="Write a comment..." class="w-full h-12 bg-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 resize-none"></textarea>
+                            </div>
+                            <button @click="postItem" class="bg-indigo-600 text-white px-3 h-12 rounded-lg text-xs font-bold hover:bg-indigo-700 transition">Send</button>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTab === 'qa'">
+                        <div class="space-y-2">
+                             <div class="flex justify-between items-center">
+                                <span class="text-xs font-bold text-slate-500">Ask a Question</span>
+                                <div class="flex gap-2 text-xs">
+                                    <button @click="qaMode = 'edit'" :class="qaMode==='edit'?'text-orange-600 font-bold':'text-slate-400'">Write</button>
+                                    <button @click="qaMode = 'preview'" :class="qaMode==='preview'?'text-orange-600 font-bold':'text-slate-400'">Preview</button>
+                                </div>
+                            </div>
+                            <textarea v-if="qaMode === 'edit'" v-model="newCommentInput" placeholder="Markdown supported..." class="w-full h-24 bg-slate-100 rounded-lg p-3 text-sm focus:outline-none resize-none focus:ring-2 focus:ring-orange-100"></textarea>
+                            <div v-else class="w-full h-24 bg-orange-50/30 border border-orange-100 rounded-lg p-3 text-sm overflow-y-auto prose prose-sm" v-html="renderMD(newCommentInput || 'Nothing to preview')"></div>
+                            <div class="flex justify-end">
+                                 <button @click="postItem" class="bg-orange-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-orange-700 transition">Post Question</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTab === 'long'">
+                        <div v-if="!isWritingLong" class="text-center h-12 flex items-center justify-center">
+                            <button @click="isWritingLong = true" class="w-full h-full border border-dashed border-purple-300 text-purple-600 rounded-lg text-sm hover:bg-purple-50">+ Write Review</button>
+                        </div>
+                        <div v-else class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <input v-model="newLongReviewTitle" type="text" placeholder="Title" class="flex-1 border-b border-slate-200 px-2 py-1 text-sm focus:outline-none focus:border-purple-500 mr-4">
+                                <div class="flex gap-2 text-xs">
+                                    <button @click="longMode = 'edit'" :class="longMode==='edit'?'text-purple-600 font-bold':'text-slate-400'">Write</button>
+                                    <button @click="longMode = 'preview'" :class="longMode==='preview'?'text-purple-600 font-bold':'text-slate-400'">Preview</button>
+                                </div>
+                            </div>
+                            <textarea v-if="longMode === 'edit'" v-model="newLongReviewContent" placeholder="Markdown supported..." class="w-full h-32 bg-slate-50 rounded-lg p-3 text-sm focus:outline-none resize-none"></textarea>
+                            <div v-else class="w-full h-32 bg-purple-50/30 border border-purple-100 rounded-lg p-3 text-sm overflow-y-auto prose prose-sm" v-html="renderMD(newLongReviewContent || 'Nothing to preview')"></div>
+                            <div class="flex justify-end gap-2">
+                                <button @click="isWritingLong = false" class="text-xs text-slate-500">Cancel</button>
+                                <button @click="postLongReview" class="bg-purple-600 text-white px-4 py-1.5 rounded-md text-xs font-bold hover:bg-purple-700">Post Review</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const { createApp, ref, reactive, computed, nextTick, onMounted } = Vue;
+
+    createApp({
+        setup() {
+            const papers = ref([]);
+            const isLoading = ref(true);
+            const selectedPaper = ref(null);
+            
+            const filters = reactive({ query: "", tags: [], timeRange: "all" });
+            const customFilterInput = ref(""); 
+            const activeTab = ref("short");
+            const newCommentInput = ref("");
+            const isWritingLong = ref(false);
+            const newLongReviewTitle = ref("");
+            const newLongReviewContent = ref("");
+            
+            const noteMode = ref("edit");
+            const longMode = ref("edit");
+            const qaMode = ref("edit");
+            
+            const isAllExpanded = ref(false);
+            const isAllTranslated = ref(false);
+            const userAddedTagPool = ref([]);
+            const newTagInput = ref("");
+
+            // --- Fetch Logic ---
+            const fetchPapers = async () => {
+                isLoading.value = true;
+                try {
+                    // 读取同目录下的 papers_data.json，加时间戳防缓存
+                    const response = await fetch(`./papers_data.json?t=${new Date().getTime()}`);
+                    if (!response.ok) throw new Error("File not found or network error");
+                    const data = await response.json();
+                    
+                    // 补全可能缺失的字段，防止报错
+                    data.forEach(p => {
+                        if(!p.userTags) p.userTags = [];
+                        if(!p.comments) p.comments = [];
+                        if(!p.qa) p.qa = [];
+                        if(!p.summary) p.summary = { innovation: "暂无总结" };
+                    });
+                    
+                    papers.value = data;
+                } catch (error) {
+                    console.warn("Loading failed, using empty state:", error);
+                    // 可以在这里插入一些假数据用于测试，如果需要的话
+                } finally {
+                    isLoading.value = false;
+                    nextTick(() => lucide.createIcons());
+                }
+            };
+
+            onMounted(() => {
+                fetchPapers();
+            });
+
+            // --- Computed ---
+            const allAffiliations = computed(() => [...new Set(papers.value.map(p => p.affiliation))]);
+            
+            const systemTags = computed(() => { 
+                const t = new Set(); 
+                papers.value.forEach(p => {
+                    if (p.tags) p.tags.forEach(x => t.add(x));
+                }); 
+                return Array.from(t); 
+            });
+            
+            const availableTags = computed(() => Array.from(new Set([...systemTags.value, ...userAddedTagPool.value])).filter(t => !filters.tags.includes(t)));
+
+            const filteredPapers = computed(() => {
+                let result = papers.value;
+                if (filters.tags.length > 0) result = result.filter(p => filters.tags.every(sel => p.tags.some(t=>t.toLowerCase()===sel.toLowerCase()) || p.userTags.some(t=>t.toLowerCase()===sel.toLowerCase())));
+                if (filters.query) {
+                    const q = filters.query.toLowerCase();
+                    result = result.filter(p => p.orig_title.toLowerCase().includes(q) || p.authors.some(a => a.toLowerCase().includes(q)));
+                }
+                if (filters.timeRange !== 'all') {
+                    const now = new Date();
+                    const oneDay = 86400000;
+                    if (filters.timeRange === 'week') result = result.filter(p => (now - new Date(p.date)) < 7 * oneDay);
+                    else if (filters.timeRange === 'month') result = result.filter(p => (now - new Date(p.date)) < 30 * oneDay);
+                }
+                return result;
+            });
+
+            const shortComments = computed(() => selectedPaper.value ? selectedPaper.value.comments.filter(c => c.type === 'short') : []);
+            const qaList = computed(() => selectedPaper.value ? (selectedPaper.value.qa || []) : []);
+            const longReviews = computed(() => selectedPaper.value ? selectedPaper.value.comments.filter(c => c.type === 'long') : []);
+
+            // --- Methods ---
+            const toggleGlobalExpand = () => { isAllExpanded.value = !isAllExpanded.value; papers.value.forEach(p => p.expanded = isAllExpanded.value); };
+            const toggleGlobalTranslate = () => { 
+                isAllTranslated.value = !isAllTranslated.value; 
+                papers.value.forEach(p => p.isTranslated = isAllTranslated.value);
+                if(isAllTranslated.value) { isAllExpanded.value = true; papers.value.forEach(p => p.expanded = true); }
+            };
+
+            const addTagToPool = () => { 
+                const val = customFilterInput.value.trim(); 
+                if (val && !systemTags.value.includes(val) && !userAddedTagPool.value.includes(val)) userAddedTagPool.value.push(val);
+                customFilterInput.value = ""; 
+            };
+            
+            const removeTagFromPool = (tag) => {
+                userAddedTagPool.value = userAddedTagPool.value.filter(t => t !== tag);
+            };
+
+            const toggleLike = (paper) => { paper.isLiked = !paper.isLiked; paper.likes += paper.isLiked ? 1 : -1; };
+            const toggleCollect = (paper) => { paper.isCollected = !paper.isCollected; paper.collections += paper.isCollected ? 1 : -1; };
+            
+            const openModal = (paper) => { 
+                selectedPaper.value = paper; 
+                activeTab.value = 'short'; 
+                noteMode.value = 'edit'; 
+                longMode.value = 'edit';
+                document.body.style.overflow = 'hidden'; 
+            };
+            
+            const closeModal = () => { selectedPaper.value = null; document.body.style.overflow = 'auto'; };
+            const toggleTag = (tag) => { if (filters.tags.includes(tag)) filters.tags = filters.tags.filter(t => t !== tag); else filters.tags.push(tag); };
+            const addUserTag = () => { const tag = newTagInput.value.trim(); if(tag) selectedPaper.value.userTags.push(tag); newTagInput.value = ""; };
+            const removeUserTag = (p, i) => p.userTags.splice(i, 1);
+            const resetFilter = () => { filters.tags = []; filters.query = ""; filters.timeRange = "all"; };
+            const renderMD = (text) => marked.parse(text);
+
+            const postItem = () => {
+                if (!newCommentInput.value.trim()) return;
+                
+                if (activeTab.value === 'short') {
+                    selectedPaper.value.comments.unshift({ id: Date.now(), type: 'short', user: "Me", avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=Felix", content: newCommentInput.value, time: "Just now" });
+                } else if (activeTab.value === 'qa') {
+                    if (!selectedPaper.value.qa) selectedPaper.value.qa = [];
+                    selectedPaper.value.qa.unshift({ id: Date.now(), user: "Me", content: newCommentInput.value, time: "Just now", reply: null });
+                }
+                newCommentInput.value = "";
+            };
+
+            const postLongReview = () => { if (!newLongReviewContent.value.trim()) return; selectedPaper.value.comments.unshift({ id: Date.now(), type: 'long', user: "Me", avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=Felix", title: newLongReviewTitle.value || "Review", content: newLongReviewContent.value, time: "Just now" }); newLongReviewContent.value = ""; newLongReviewTitle.value = ""; isWritingLong.value = false; };
+            
+            nextTick(() => lucide.createIcons());
+
+            return {
+                papers, filters, availableTags, allAffiliations, filteredPapers, selectedPaper,
+                customFilterInput, isAllExpanded, isAllTranslated, activeTab, 
+                shortComments, qaList, longReviews, newCommentInput, isWritingLong, newLongReviewTitle, newLongReviewContent,
+                toggleGlobalExpand, toggleGlobalTranslate, addTagToPool, removeTagFromPool,
+                openModal, closeModal, toggleTag, toggleLike, toggleCollect,
+                postItem, postLongReview, addUserTag, removeUserTag, resetFilter, newTagInput,
+                noteMode, longMode, qaMode, userAddedTagPool, renderMD, isLoading
+            };
+        },
+        updated() { lucide.createIcons(); }
+    }).mount('#app');
+</script>
+</body>
+</html>

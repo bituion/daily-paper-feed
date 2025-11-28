@@ -1,0 +1,42 @@
+name: Daily ArXiv Update
+
+# 触发条件
+on:
+  schedule:
+    # 每天 UTC 时间 0:00 运行 (北京时间 8:00)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 允许你在网页上手动点击按钮立即运行测试
+
+permissions:
+  contents: write # 必须赋予写权限，否则无法提交 json 文件
+
+jobs:
+  update-papers:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        pip install arxiv openai pytz
+
+    - name: Run Fetch Script
+      env:
+        DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+      run: python daily_fetch.py
+
+    - name: Commit and Push changes
+      run: |
+        git config --global user.name 'PaperBot'
+        git config --global user.email 'bot@noreply.github.com'
+        git add papers_data.json
+        # 如果文件有变化则提交，没变化则跳过，防止报错
+        git commit -m "Auto-update: new papers fetched [skip ci]" || echo "No changes to commit"
+        git push
