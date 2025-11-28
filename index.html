@@ -184,10 +184,10 @@
                     <div class="border-t border-slate-200 pt-4">
                         <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
                             <div class="flex gap-6 overflow-x-auto scrollbar-hide">
-                                <button @click="activeTab = 'short'" :class="activeTab === 'short' ? 'text-indigo-600 font-bold border-b-2 border-indigo-500' : 'text-slate-400'" class="pb-2 text-sm transition whitespace-nowrap flex items-center gap-1"><i data-lucide="message-square" class="w-4 h-4"></i> {{ shortComments.length }}</button>
-                                <button @click="activeTab = 'qa'" :class="activeTab === 'qa' ? 'text-orange-600 font-bold border-b-2 border-orange-500' : 'text-slate-400'" class="pb-2 text-sm transition whitespace-nowrap flex items-center gap-1"><i data-lucide="help-circle" class="w-4 h-4"></i> {{ qaList.length }}</button>
-                                <button @click="activeTab = 'long'" :class="activeTab === 'long' ? 'text-purple-600 font-bold border-b-2 border-purple-500' : 'text-slate-400'" class="pb-2 text-sm transition whitespace-nowrap flex items-center gap-1"><i data-lucide="file-text" class="w-4 h-4"></i> {{ longReviews.length }}</button>
-                                <button @click="activeTab = 'private'" :class="activeTab === 'private' ? 'text-yellow-600 font-bold border-b-2 border-yellow-500' : 'text-slate-400'" class="pb-2 text-sm transition whitespace-nowrap flex items-center gap-1"><i data-lucide="sticky-note" class="w-4 h-4"></i></button>
+                                <button @click="switchTab('discussion')" :class="activeTab === 'discussion' ? 'text-indigo-600 font-bold border-b-2 border-indigo-500' : 'text-slate-400'" class="pb-2 text-sm transition whitespace-nowrap flex items-center gap-1"><i data-lucide="message-square" class="w-4 h-4"></i> Discussion</button>
+                                <button @click="switchTab('qa')" :class="activeTab === 'qa' ? 'text-orange-600 font-bold border-b-2 border-orange-500' : 'text-slate-400'" class="pb-2 text-sm transition whitespace-nowrap flex items-center gap-1"><i data-lucide="help-circle" class="w-4 h-4"></i> Q&A</button>
+                                <button @click="switchTab('long')" :class="activeTab === 'long' ? 'text-purple-600 font-bold border-b-2 border-purple-500' : 'text-slate-400'" class="pb-2 text-sm transition whitespace-nowrap flex items-center gap-1"><i data-lucide="file-text" class="w-4 h-4"></i> Reviews</button>
+                                <button @click="switchTab('private')" :class="activeTab === 'private' ? 'text-yellow-600 font-bold border-b-2 border-yellow-500' : 'text-slate-400'" class="pb-2 text-sm transition whitespace-nowrap flex items-center gap-1"><i data-lucide="sticky-note" class="w-4 h-4"></i> Private Note</button>
                             </div>
                             <div class="flex gap-2 pb-1 flex-shrink-0">
                                 <button @click="toggleLike(selectedPaper)" class="flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full transition bg-slate-50 hover:bg-red-50 border border-slate-100" :class="selectedPaper.isLiked ? 'text-red-500 border-red-100' : 'text-slate-400'"><i data-lucide="heart" class="w-3.5 h-3.5" :class="selectedPaper.isLiked ? 'fill-current' : ''"></i> {{ selectedPaper.likes }}</button>
@@ -196,38 +196,11 @@
                         </div>
                         
                         <div class="h-[250px] overflow-y-auto pr-2 custom-scrollbar">
-                            <div v-if="activeTab === 'short'" class="space-y-4">
+                            <div v-if="['discussion', 'qa', 'long'].includes(activeTab)" class="space-y-4">
                                 <!-- Giscus Container -->
                                 <div class="giscus-frame min-h-[200px]">
                                     <div id="giscus-container"></div>
                                 </div>
-                            </div>
-
-                            <div v-if="activeTab === 'qa'" class="space-y-4">
-                                <div v-for="q in qaList" :key="q.id" class="bg-orange-50 border border-orange-100 rounded-lg p-3">
-                                    <div class="flex gap-2 items-start">
-                                        <div class="bg-orange-200 text-orange-800 text-[10px] font-bold px-1.5 rounded">Q</div>
-                                        <div class="flex-1">
-                                            <div class="flex justify-between text-xs mb-1"><span class="font-bold text-slate-700">{{ q.user }}</span><span class="text-slate-400">{{ q.time }}</span></div>
-                                            <div class="text-slate-700 text-sm font-medium prose prose-sm max-w-none" v-html="renderMD(q.content)"></div>
-                                        </div>
-                                    </div>
-                                    <div v-if="q.reply" class="mt-2 pl-6 border-l-2 border-orange-200">
-                                        <div class="flex gap-2 items-start">
-                                            <div class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-1.5 rounded">A</div>
-                                            <div class="text-slate-600 text-xs prose prose-sm max-w-none" v-html="renderMD(q.reply)"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div v-if="qaList.length===0" class="text-center text-slate-400 text-xs mt-10">No questions yet. Ask one!</div>
-                            </div>
-                            
-                            <div v-if="activeTab === 'long'" class="space-y-6">
-                                <div v-for="c in longReviews" :key="c.id" class="border border-slate-100 rounded-xl p-4 shadow-sm">
-                                    <div class="flex items-center gap-2 mb-3 border-b border-slate-50 pb-2"><img :src="c.avatar" class="w-6 h-6 rounded-full"><span class="font-bold text-sm text-slate-800">{{ c.title }}</span><span class="text-xs text-slate-400 ml-auto">{{ c.time }}</span></div>
-                                    <div class="prose prose-sm max-w-none text-slate-600 text-xs" v-html="renderMD(c.content)"></div>
-                                </div>
-                                <div v-if="longReviews.length===0" class="text-center text-slate-400 text-xs mt-10">No detailed reviews.</div>
                             </div>
                             
                             <div v-if="activeTab === 'private'" class="h-full flex flex-col">
@@ -245,49 +218,11 @@
                 </div>
 
                 <div v-if="activeTab !== 'private'" class="p-4 border-t border-slate-200 bg-white">
-                    <div v-if="activeTab === 'short'">
-                        <!-- Giscus handles input automatically, so we hide the custom input -->
-                        <div class="text-center text-xs text-slate-400">
-                            Powered by <a href="https://giscus.app" target="_blank" class="text-indigo-500 hover:underline">Giscus</a>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTab === 'qa'">
-                        <div class="space-y-2">
-                             <div class="flex justify-between items-center">
-                                <span class="text-xs font-bold text-slate-500">Ask a Question</span>
-                                <div class="flex gap-2 text-xs">
-                                    <button @click="qaMode = 'edit'" :class="qaMode==='edit'?'text-orange-600 font-bold':'text-slate-400'">Write</button>
-                                    <button @click="qaMode = 'preview'" :class="qaMode==='preview'?'text-orange-600 font-bold':'text-slate-400'">Preview</button>
-                                </div>
-                            </div>
-                            <textarea v-if="qaMode === 'edit'" v-model="newCommentInput" placeholder="Markdown supported..." class="w-full h-24 bg-slate-100 rounded-lg p-3 text-sm focus:outline-none resize-none focus:ring-2 focus:ring-orange-100"></textarea>
-                            <div v-else class="w-full h-24 bg-orange-50/30 border border-orange-100 rounded-lg p-3 text-sm overflow-y-auto prose prose-sm" v-html="renderMD(newCommentInput || 'Nothing to preview')"></div>
-                            <div class="flex justify-end">
-                                 <button @click="postItem" class="bg-orange-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-orange-700 transition">Post Question</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTab === 'long'">
-                        <div v-if="!isWritingLong" class="text-center h-12 flex items-center justify-center">
-                            <button @click="isWritingLong = true" class="w-full h-full border border-dashed border-purple-300 text-purple-600 rounded-lg text-sm hover:bg-purple-50">+ Write Review</button>
-                        </div>
-                        <div v-else class="space-y-2">
-                            <div class="flex justify-between items-center">
-                                <input v-model="newLongReviewTitle" type="text" placeholder="Title" class="flex-1 border-b border-slate-200 px-2 py-1 text-sm focus:outline-none focus:border-purple-500 mr-4">
-                                <div class="flex gap-2 text-xs">
-                                    <button @click="longMode = 'edit'" :class="longMode==='edit'?'text-purple-600 font-bold':'text-slate-400'">Write</button>
-                                    <button @click="longMode = 'preview'" :class="longMode==='preview'?'text-purple-600 font-bold':'text-slate-400'">Preview</button>
-                                </div>
-                            </div>
-                            <textarea v-if="longMode === 'edit'" v-model="newLongReviewContent" placeholder="Markdown supported..." class="w-full h-32 bg-slate-50 rounded-lg p-3 text-sm focus:outline-none resize-none"></textarea>
-                            <div v-else class="w-full h-32 bg-purple-50/30 border border-purple-100 rounded-lg p-3 text-sm overflow-y-auto prose prose-sm" v-html="renderMD(newLongReviewContent || 'Nothing to preview')"></div>
-                            <div class="flex justify-end gap-2">
-                                <button @click="isWritingLong = false" class="text-xs text-slate-500">Cancel</button>
-                                <button @click="postLongReview" class="bg-purple-600 text-white px-4 py-1.5 rounded-md text-xs font-bold hover:bg-purple-700">Post Review</button>
-                            </div>
-                        </div>
+                    <div class="text-center text-xs text-slate-400">
+                        <span v-if="activeTab === 'discussion'">General Discussion</span>
+                        <span v-if="activeTab === 'qa'">Q&A Section</span>
+                        <span v-if="activeTab === 'long'">Detailed Reviews</span>
+                        • Powered by <a href="https://giscus.app" target="_blank" class="text-indigo-500 hover:underline">Giscus</a>
                     </div>
                 </div>
             </div>
@@ -306,15 +241,10 @@
             
             const filters = reactive({ query: "", tags: [], timeRange: "all" });
             const customFilterInput = ref(""); 
-            const activeTab = ref("short");
+            const activeTab = ref("discussion");
             const newCommentInput = ref("");
-            const isWritingLong = ref(false);
-            const newLongReviewTitle = ref("");
-            const newLongReviewContent = ref("");
             
             const noteMode = ref("edit");
-            const longMode = ref("edit");
-            const qaMode = ref("edit");
             
             const isAllExpanded = ref(false);
             const isAllTranslated = ref(false);
@@ -406,22 +336,37 @@
             const toggleLike = (paper) => { paper.isLiked = !paper.isLiked; paper.likes += paper.isLiked ? 1 : -1; };
             const toggleCollect = (paper) => { paper.isCollected = !paper.isCollected; paper.collections += paper.isCollected ? 1 : -1; };
             
-            const toggleCollect = (paper) => { paper.isCollected = !paper.isCollected; paper.collections += paper.isCollected ? 1 : -1; };
-            
-            const loadGiscus = (paperId) => {
+            // Giscus Configuration - PLEASE FILL THESE IN
+            const GISCUS_CONFIG = {
+                repo: "bituion/daily-paper-feed",
+                repoId: "R_kgDONU4e_g", // 你的 Repo ID
+                categories: {
+                    discussion: { name: "Announcements", id: "DIC_kwDONU4e_s4Ckrml" }, // 对应 Discussion 标签
+                    qa:         { name: "Q&A",           id: "DIC_kwDOQesoW84CzJ7H" }, // 对应 Q&A 标签 (请替换为真实的 Q&A Category ID)
+                    long:       { name: "Show and tell", id: "DIC_kwDOQesoW84CzJ7J" }  // 对应 Reviews 标签 (请替换为真实的 Show and tell Category ID)
+                }
+            };
+
+            const loadGiscus = (paperId, tabType) => {
                 const container = document.getElementById('giscus-container');
                 if (!container) return;
                 
                 container.innerHTML = ''; // Clear previous
                 
+                const config = GISCUS_CONFIG.categories[tabType] || GISCUS_CONFIG.categories.discussion;
+                // 为了区分不同标签页的评论，我们在 paperId 后面加上后缀作为 term
+                let term = paperId;
+                if (tabType === 'qa') term += '-QA';
+                if (tabType === 'long') term += '-Review';
+
                 const script = document.createElement('script');
                 script.src = "https://giscus.app/client.js";
-                script.setAttribute("data-repo", "bituion/daily-paper-feed");
-                script.setAttribute("data-repo-id", "R_kgDOQesoWw"); // 替换为你的 Repo ID
-                script.setAttribute("data-category", "Announcements"); // 替换为你的 Category Name
-                script.setAttribute("data-category-id", "DIC_kwDOQesoW84CzJ7F"); // 替换为你的 Category ID
+                script.setAttribute("data-repo", GISCUS_CONFIG.repo);
+                script.setAttribute("data-repo-id", GISCUS_CONFIG.repoId);
+                script.setAttribute("data-category", config.name);
+                script.setAttribute("data-category-id", config.id);
                 script.setAttribute("data-mapping", "specific");
-                script.setAttribute("data-term", paperId);
+                script.setAttribute("data-term", term);
                 script.setAttribute("data-reactions-enabled", "1");
                 script.setAttribute("data-emit-metadata", "0");
                 script.setAttribute("data-input-position", "top");
@@ -433,20 +378,29 @@
                 container.appendChild(script);
             };
 
+            const switchTab = (tab) => {
+                activeTab.value = tab;
+                if (tab !== 'private') {
+                    nextTick(() => {
+                        loadGiscus(selectedPaper.value.id, tab);
+                    });
+                }
+            };
+
             const openModal = (paper) => { 
                 selectedPaper.value = paper; 
-                activeTab.value = 'short'; 
+                activeTab.value = 'discussion'; 
                 noteMode.value = 'edit'; 
-                longMode.value = 'edit';
                 document.body.style.overflow = 'hidden';
                 
                 // Load Giscus after DOM update
                 nextTick(() => {
-                    loadGiscus(paper.id);
+                    loadGiscus(paper.id, 'discussion');
                 });
             };
             
-            const closeModal = () => { selectedPaper.value = null; document.body.style.overflow = 'auto'; };rTags.push(tag); newTagInput.value = ""; };
+            const closeModal = () => { selectedPaper.value = null; document.body.style.overflow = 'auto'; };
+            const addUserTag = () => { if (!newTagInput.value.trim()) return; selectedPaper.value.userTags.push(newTagInput.value.trim()); newTagInput.value = ""; };
             const removeUserTag = (p, i) => p.userTags.splice(i, 1);
             const resetFilter = () => { filters.tags = []; filters.query = ""; filters.timeRange = "all"; };
             const renderMD = (text) => marked.parse(text);
@@ -472,7 +426,7 @@
                 customFilterInput, isAllExpanded, isAllTranslated, activeTab, 
                 shortComments, qaList, longReviews, newCommentInput, isWritingLong, newLongReviewTitle, newLongReviewContent,
                 toggleGlobalExpand, toggleGlobalTranslate, addTagToPool, removeTagFromPool,
-                openModal, closeModal, toggleTag, toggleLike, toggleCollect,
+                openModal, closeModal, toggleTag, toggleLike, toggleCollect, switchTab,
                 postItem, postLongReview, addUserTag, removeUserTag, resetFilter, newTagInput,
                 noteMode, longMode, qaMode, userAddedTagPool, renderMD, isLoading
             };
