@@ -36,7 +36,14 @@ jobs:
       run: |
         git config --global user.name 'PaperBot'
         git config --global user.email 'bot@noreply.github.com'
-        git add papers_data.json
-        git commit -m "Auto-update: new papers fetched [skip ci]" || echo "No changes to commit"
-        # 强制推送到 main 分支，解决 Detached HEAD 问题
-        git push origin HEAD:main
+        
+        # 1. 只有文件存在时才 add
+        if [ -f papers_data.json ]; then
+          git add papers_data.json
+          # 2. 只有有变动时才 commit，否则 echo 提示
+          git commit -m "Auto-update: new papers fetched [skip ci]" || echo "No changes to commit"
+          # 3. 这里的 HEAD:main 也是为了防止 Detached HEAD 错误
+          git push origin HEAD:main
+        else
+          echo "papers_data.json 仍然不存在，跳过提交。"
+        fi
