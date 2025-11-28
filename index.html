@@ -336,10 +336,12 @@
             const toggleLike = (paper) => { paper.isLiked = !paper.isLiked; paper.likes += paper.isLiked ? 1 : -1; };
             const toggleCollect = (paper) => { paper.isCollected = !paper.isCollected; paper.collections += paper.isCollected ? 1 : -1; };
             
+            const toggleTag = (tag) => { if (filters.tags.includes(tag)) filters.tags = filters.tags.filter(t => t !== tag); else filters.tags.push(tag); };
+            
             // Giscus Configuration - PLEASE FILL THESE IN
             const GISCUS_CONFIG = {
                 repo: "bituion/daily-paper-feed",
-                repoId: "R_kgDONU4e_g", // 你的 Repo ID
+                repoId: "R_kgDOQesoWw", // 你的 Repo ID
                 categories: {
                     discussion: { name: "Announcements", id: "DIC_kwDONU4e_s4Ckrml" }, // 对应 Discussion 标签
                     qa:         { name: "Q&A",           id: "DIC_kwDOQesoW84CzJ7H" }, // 对应 Q&A 标签 (请替换为真实的 Q&A Category ID)
@@ -404,31 +406,17 @@
             const removeUserTag = (p, i) => p.userTags.splice(i, 1);
             const resetFilter = () => { filters.tags = []; filters.query = ""; filters.timeRange = "all"; };
             const renderMD = (text) => marked.parse(text);
-
-            const postItem = () => {
-                if (!newCommentInput.value.trim()) return;
-                
-                if (activeTab.value === 'short') {
-                    selectedPaper.value.comments.unshift({ id: Date.now(), type: 'short', user: "Me", avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=Felix", content: newCommentInput.value, time: "Just now" });
-                } else if (activeTab.value === 'qa') {
-                    if (!selectedPaper.value.qa) selectedPaper.value.qa = [];
-                    selectedPaper.value.qa.unshift({ id: Date.now(), user: "Me", content: newCommentInput.value, time: "Just now", reply: null });
-                }
-                newCommentInput.value = "";
-            };
-
-            const postLongReview = () => { if (!newLongReviewContent.value.trim()) return; selectedPaper.value.comments.unshift({ id: Date.now(), type: 'long', user: "Me", avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=Felix", title: newLongReviewTitle.value || "Review", content: newLongReviewContent.value, time: "Just now" }); newLongReviewContent.value = ""; newLongReviewTitle.value = ""; isWritingLong.value = false; };
             
             nextTick(() => lucide.createIcons());
 
             return {
                 papers, filters, availableTags, allAffiliations, filteredPapers, selectedPaper,
                 customFilterInput, isAllExpanded, isAllTranslated, activeTab, 
-                shortComments, qaList, longReviews, newCommentInput, isWritingLong, newLongReviewTitle, newLongReviewContent,
+                shortComments, qaList, longReviews, newCommentInput,
                 toggleGlobalExpand, toggleGlobalTranslate, addTagToPool, removeTagFromPool,
                 openModal, closeModal, toggleTag, toggleLike, toggleCollect, switchTab,
-                postItem, postLongReview, addUserTag, removeUserTag, resetFilter, newTagInput,
-                noteMode, longMode, qaMode, userAddedTagPool, renderMD, isLoading
+                addUserTag, removeUserTag, resetFilter, newTagInput,
+                noteMode, userAddedTagPool, renderMD, isLoading
             };
         },
         updated() { lucide.createIcons(); }
