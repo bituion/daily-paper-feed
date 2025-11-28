@@ -45,7 +45,7 @@ def fetch_arxiv_updates(existing_ids):
     # 搜索最近 100 篇
     search = arxiv.Search(
         query=query,
-        max_results=100,, 
+        max_results=10, 
         sort_by=arxiv.SortCriterion.SubmittedDate,
         sort_order=arxiv.SortOrder.Descending
     )
@@ -55,7 +55,7 @@ def fetch_arxiv_updates(existing_ids):
     
     # 设置时间窗口：过去 25 小时 (GitHub Action 每天运行一次，稍微多抓一点防止漏掉)
     utc_now = datetime.datetime.now(datetime.timezone.utc)
-    time_threshold = utc_now - datetime.timedelta(hours=25)
+    time_threshold = utc_now - datetime.timedelta(days=3)
 
     for r in client_arxiv.results(search):
         paper_id = r.entry_id.split('/')[-1]
