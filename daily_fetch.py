@@ -108,50 +108,61 @@ def ai_process(title, abstract):
         print(f"⚠️ AI 处理出错: {e}")
         return {"innovation": "AI 总结暂不可用", "abstract_zh": "翻译暂不可用"}
 
+# 将 daily_fetch.py 中的 main 函数替换为这个：
+
 def main():
     existing_data = get_existing_papers()
     existing_ids = {p['id'] for p in existing_data}
     
-    raw_papers = fetch_arxiv_updates(existing_ids)
-    
-    if not raw_papers:
-        print("✅ 没有新论文。")
-        return
+    # 尝试获取新数据
+    try:
+        raw_papers = fetch_arxiv_updates(existing_ids)
+    except Exception as e:
+        print(f"❌ 获取 ArXiv 数据出错: {e}")
+        raw_papers = []
 
     processed_list = []
     
-    for i, r in enumerate(raw_papers):
-        print(f"[{i+1}/{len(raw_papers)}] 处理中: {r.title[:30]}...")
-        
-        ai_res = ai_process(r.title, r.summary)
-        
-        paper_obj = {
-            "id": r.entry_id.split('/')[-1],
-            "orig_title": r.title.replace('\n', ' '),
-            "tags": [t.split('.')[-1] for t in r.categories if t in TARGET_CATEGORIES],
-            "userTags": [],
-            "coverGradient": random.choice(GRADIENTS),
-            "summary": { "innovation": ai_res.get("innovation", "无总结") },
-            "abstract_zh": ai_res.get("abstract_zh", "无翻译"),
-            "abstract_en": r.summary.replace('\n', ' '),
-            "authors": [a.name for a in r.authors[:5]],
-            "affiliation": r.categories[0], 
-            "date": r.updated.strftime("%Y-%m-%d"),
-            "pdf_url": r.pdf_url,
-            "likes": 0, "isLiked": False, 
-            "collections": 0, "isCollected": False,
-            "comments": [], "qa": [],
-            "expanded": False, "isTranslated": False
-        }
-        processed_list.append(paper_obj)
-        time.sleep(1) # 避免触发 API 速率限制
+    # 如果有新论文，进行处理
+    if raw_papers:
+        for i, r in enumerate(raw_papers):
+            print(f"[{i+1}/{len(raw_papers)}] 处理中: {r.title[:30]}...")
+            
+            ai_res = ai_process(r.title, r.summary)
+            
+            paper_obj = {
+                "id": r.entry_id.split('/')[-1],
+                "orig_title": r.title.replace('\n', ' '),
+                "tags": [t.split('.')[-1] for t in r.categories if t in TARGET_CATEGORIES],
+                "userTags": [],
+                "coverGradient": random.choice(GRADIENTS),
+                "summary": { "innovation": ai_res.get("innovation", "无总结") },
+                "abstract_zh": ai_res.get("abstract_zh", "无翻译"),
+                "abstract_en": r.summary.replace('\n', ' '),
+                "authors": [a.name for a in r.authors[:5]],
+                "affiliation": r.categories[0], 
+                "date": r.updated.strftime("%Y-%m-%d"),
+                "pdf_url": r.pdf_url,
+                "likes": 0, "isLiked": False, 
+                "collections": 0, "isCollected": False,
+                "comments": [], "qa": [],
+                "expanded": False, "isTranslated": False
+            }
+            processed_list.append(paper_obj)
+            time.sleep(1) # 避免触发 API 速率限制
+    else:
+        print("⚠️ 本次没有发现新论文。")
 
+    # --- 关键修改：无论有没有新论文，都执行合并与保存 ---
+    
     # 合并：新论文放最前面
     final_data = processed_list + existing_data
     
-    # 保存
+    # 强制保存（如果文件不存在，这里会创建它；如果存在，会更新它）
     with open(JSON_FILE, 'w', encoding='utf-8') as f:
         json.dump(final_data, f, ensure_ascii=False, indent=2)
+    
+    print(f"💾 数据处理完成。文件已保存至 {JSON_FILE} (当前总数: {len(final_data)})")
     
     print(f"💾 更新完成，新增 {len(processed_list)} 篇。")
 
