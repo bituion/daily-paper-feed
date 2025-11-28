@@ -45,7 +45,7 @@ def fetch_arxiv_updates(existing_ids):
     # 搜索最近 100 篇
     search = arxiv.Search(
         query=query,
-        max_results=100, 
+        max_results=10, 
         sort_by=arxiv.SortCriterion.SubmittedDate,
         sort_order=arxiv.SortOrder.Descending
     )
@@ -53,9 +53,9 @@ def fetch_arxiv_updates(existing_ids):
     client_arxiv = arxiv.Client(page_size=100, delay_seconds=3, num_retries=3)
     new_papers = []
     
-    # 设置时间窗口：过去 48 小时 (放宽时间窗口，防止漏掉论文，反正有 ID 去重)
+    # 设置时间窗口：过去 3 天 (放宽时间窗口，防止漏掉论文，反正有 ID 去重)
     utc_now = datetime.datetime.now(datetime.timezone.utc)
-    time_threshold = utc_now - datetime.timedelta(hours=48)
+    time_threshold = utc_now - datetime.timedelta(days=3)
 
     print(f"🕒 当前 UTC 时间: {utc_now}")
     print(f"⏳ 抓取时间阈值: {time_threshold}")

@@ -1,0 +1,328 @@
+[
+  {
+    "id": "2511.21692v1",
+    "orig_title": "Revisiting Generalization Across Difficulty Levels: It's Not So Easy",
+    "tags": [
+      "CL",
+      "AI"
+    ],
+    "userTags": [],
+    "coverGradient": "bg-gradient-to-br from-purple-500 to-pink-600",
+    "summary": {
+      "innovation": "使用数千个LLM和IRT客观评估难度，揭示跨难度泛化有限。"
+    },
+    "abstract_zh": "我们研究大型语言模型（LLM）在不同任务难度下的泛化能力，这是有效数据整理和评估的关键问题。现有研究对于在简单或困难数据上训练是否能带来更好结果，以及这些收益是体现在简单还是困难测试数据上存在分歧。我们通过系统评估LLM在模型、数据集和细粒度难度组别上的泛化能力来解决这个问题。我们使用数千个不同LLM的输出和项目反应理论（IRT，教育测试中成熟的难度指标）对六个数据集中的示例进行难度排序。与先前工作不同，我们的难度评级完全由许多不同LLM的能力决定，排除了人类对难度的主观判断。通过更客观、更大规模和更细粒度的分析，我们发现跨难度泛化通常有限；在简单或困难数据上训练都无法在整个难度范围内实现一致的改进。这些结果表明在LLM的训练和评估数据中包含各种难度的重要性，以及在难度方面走捷径是有风险的。",
+    "abstract_en": "We investigate how well large language models (LLMs) generalize across different task difficulties, a key question for effective data curation and evaluation. Existing research is mixed regarding whether training on easier or harder data leads to better results, and whether those gains come on easier or harder test data. We address this question by conducting a systematic evaluation of LLMs' generalization across models, datasets, and fine-grained groups of example difficulty. We rank examples in six datasets using the outputs of thousands of different LLMs and Item Response Theory (IRT), a well-established difficulty metric in educational testing. Unlike prior work, our difficulty ratings are therefore determined solely by the abilities of many different LLMs, excluding human opinions of difficulty. With a more objective, larger-scale, and finer-grained analysis, we show that cross-difficulty generalization is often limited; training on either easy or hard data cannot achieve consistent improvements across the full range of difficulties. These results show the importance of having a range of difficulties in both training and evaluation data for LLMs, and that taking shortcuts with respect to difficulty is risky.",
+    "authors": [
+      "Yeganeh Kordi",
+      "Nihal V. Nayak",
+      "Max Zuo",
+      "Ilana Nguyen",
+      "Stephen H. Bach"
+    ],
+    "affiliation": "cs.CL",
+    "date": "2025-11-26",
+    "pdf_url": "https://arxiv.org/pdf/2511.21692v1",
+    "likes": 0,
+    "isLiked": false,
+    "collections": 0,
+    "isCollected": false,
+    "comments": [],
+    "qa": [],
+    "expanded": false,
+    "isTranslated": false
+  },
+  {
+    "id": "2511.21691v1",
+    "orig_title": "Canvas-to-Image: Compositional Image Generation with Multimodal Controls",
+    "tags": [
+      "CV"
+    ],
+    "userTags": [],
+    "coverGradient": "bg-gradient-to-br from-indigo-600 to-blue-600",
+    "summary": {
+      "innovation": "将多种控制信号编码为单一画布图像，通过多任务联合训练实现统一的多模态图像生成。"
+    },
+    "abstract_zh": "尽管现代扩散模型在生成高质量多样化图像方面表现出色，但在高保真组合和多模态控制方面仍然存在困难，特别是当用户同时指定文本提示、主体参考、空间布局、姿态约束和布局标注时。我们提出了Canvas-to-Image，一个统一框架，将这些异构控制整合到单一画布界面中，使用户能够生成忠实反映其意图的图像。我们的核心思想是将多样化的控制信号编码为单一复合画布图像，模型可以直接解释该图像进行集成的视觉空间推理。我们进一步策划了一套多任务数据集，并提出了一种多任务画布训练策略，该策略优化扩散模型在统一学习范式中联合理解和整合异构控制到文本到图像生成中。这种联合训练使Canvas-to-Image能够跨多个控制模态进行推理，而不是依赖特定任务的启发式方法，并且在推理过程中能够很好地泛化到多控制场景。大量实验表明，Canvas-to-Image在具有挑战性的基准测试中，包括多人组合、姿态控制组合、布局约束生成和多控制生成，在身份保持和控制遵循方面显著优于最先进的方法。",
+    "abstract_en": "While modern diffusion models excel at generating high-quality and diverse images, they still struggle with high-fidelity compositional and multimodal control, particularly when users simultaneously specify text prompts, subject references, spatial arrangements, pose constraints, and layout annotations. We introduce Canvas-to-Image, a unified framework that consolidates these heterogeneous controls into a single canvas interface, enabling users to generate images that faithfully reflect their intent. Our key idea is to encode diverse control signals into a single composite canvas image that the model can directly interpret for integrated visual-spatial reasoning. We further curate a suite of multi-task datasets and propose a Multi-Task Canvas Training strategy that optimizes the diffusion model to jointly understand and integrate heterogeneous controls into text-to-image generation within a unified learning paradigm. This joint training enables Canvas-to-Image to reason across multiple control modalities rather than relying on task-specific heuristics, and it generalizes well to multi-control scenarios during inference. Extensive experiments show that Canvas-to-Image significantly outperforms state-of-the-art methods in identity preservation and control adherence across challenging benchmarks, including multi-person composition, pose-controlled composition, layout-constrained generation, and multi-control generation.",
+    "authors": [
+      "Yusuf Dalva",
+      "Guocheng Gordon Qian",
+      "Maya Goldenberg",
+      "Tsai-Shien Chen",
+      "Kfir Aberman"
+    ],
+    "affiliation": "cs.CV",
+    "date": "2025-11-26",
+    "pdf_url": "https://arxiv.org/pdf/2511.21691v1",
+    "likes": 0,
+    "isLiked": false,
+    "collections": 0,
+    "isCollected": false,
+    "comments": [],
+    "qa": [],
+    "expanded": false,
+    "isTranslated": false
+  },
+  {
+    "id": "2511.21690v1",
+    "orig_title": "TraceGen: World Modeling in 3D Trace Space Enables Learning from Cross-Embodiment Videos",
+    "tags": [
+      "CV",
+      "LG"
+    ],
+    "userTags": [],
+    "coverGradient": "bg-gradient-to-br from-emerald-500 to-teal-600",
+    "summary": {
+      "innovation": "提出3D轨迹空间世界模型，实现跨具身视频学习，解决机器人小样本学习难题。"
+    },
+    "abstract_zh": "从少量演示中学习新机器人任务在新平台和新场景中仍然具有挑战性。虽然其他具身（人类和不同机器人）的视频很丰富，但具身差异、相机差异和环境差异阻碍了它们的直接使用。我们通过引入一个统一的符号表示——场景级轨迹的紧凑3D“轨迹空间”——来解决小数据问题，该表示能够实现跨具身、跨环境和跨任务视频的学习。我们提出了TraceGen，一个在轨迹空间而非像素空间预测未来运动的世界模型，抽象掉外观同时保留操作所需的几何结构。为了大规模训练TraceGen，我们开发了TraceForge，一个将异构人类和机器人视频转换为一致3D轨迹的数据管道，产生了12.3万视频和180万观察-轨迹-语言三元组的数据集。在此数据集上预训练产生了一个可迁移的3D运动先验，能够高效适应：仅用五个目标机器人视频，TraceGen在四个任务中达到80%成功率，同时推理速度比最先进的基于视频的世界模型快50-600倍。在更具挑战性的情况下，仅使用五个手持手机拍摄的未标定人类演示视频，它仍然在真实机器人上达到67.5%的成功率，突显了TraceGen在不依赖物体检测器或繁重像素空间生成的情况下跨具身适应的能力。",
+    "abstract_en": "Learning new robot tasks on new platforms and in new scenes from only a handful of demonstrations remains challenging. While videos of other embodiments - humans and different robots - are abundant, differences in embodiment, camera, and environment hinder their direct use. We address the small-data problem by introducing a unifying, symbolic representation - a compact 3D \"trace-space\" of scene-level trajectories - that enables learning from cross-embodiment, cross-environment, and cross-task videos. We present TraceGen, a world model that predicts future motion in trace-space rather than pixel space, abstracting away appearance while retaining the geometric structure needed for manipulation. To train TraceGen at scale, we develop TraceForge, a data pipeline that transforms heterogeneous human and robot videos into consistent 3D traces, yielding a corpus of 123K videos and 1.8M observation-trace-language triplets. Pretraining on this corpus produces a transferable 3D motion prior that adapts efficiently: with just five target robot videos, TraceGen attains 80% success across four tasks while offering 50-600x faster inference than state-of-the-art video-based world models. In the more challenging case where only five uncalibrated human demonstration videos captured on a handheld phone are available, it still reaches 67.5% success on a real robot, highlighting TraceGen's ability to adapt across embodiments without relying on object detectors or heavy pixel-space generation.",
+    "authors": [
+      "Seungjae Lee",
+      "Yoonkyo Jung",
+      "Inkook Chun",
+      "Yao-Chih Lee",
+      "Zikui Cai"
+    ],
+    "affiliation": "cs.RO",
+    "date": "2025-11-26",
+    "pdf_url": "https://arxiv.org/pdf/2511.21690v1",
+    "likes": 0,
+    "isLiked": false,
+    "collections": 0,
+    "isCollected": false,
+    "comments": [],
+    "qa": [],
+    "expanded": false,
+    "isTranslated": false
+  },
+  {
+    "id": "2511.21689v1",
+    "orig_title": "ToolOrchestra: Elevating Intelligence via Efficient Model and Tool Orchestration",
+    "tags": [
+      "CL",
+      "AI",
+      "LG"
+    ],
+    "userTags": [],
+    "coverGradient": "bg-gradient-to-br from-orange-400 to-red-500",
+    "summary": {
+      "innovation": "通过训练小型编排器协调智能工具，实现更高性能与更低成本的任务解决。"
+    },
+    "abstract_zh": "大型语言模型是强大的通用工具，但解决如人类终极考试（HLE）等深层复杂问题仍面临概念挑战和计算成本高昂的问题。我们证明，通过小型编排器管理其他模型和多种工具，既能提升智能上限，又能提高解决复杂代理任务的效率。我们提出了ToolOrchestra，一种训练小型编排器协调智能工具的方法。ToolOrchestra明确使用强化学习，结合结果、效率和用户偏好的奖励。利用ToolOrchestra，我们开发了Orchestrator，一个80亿参数的模型，在较低成本下实现比以往工具使用代理更高的准确性，同时与用户对特定查询使用工具的偏好保持一致。在HLE上，Orchestrator得分37.1%，优于GPT-5（35.1%），且效率提高2.5倍。在tau2-Bench和FRAMES上，Orchestrator以显著优势超越GPT-5，而成本仅约30%。广泛分析表明，Orchestrator在多个指标下实现了性能与成本的最佳平衡，并对未见工具具有鲁棒泛化能力。这些结果证明，通过轻量级编排模型组合多样工具，比现有方法更高效且更有效，为实用和可扩展的工具增强推理系统铺平了道路。",
+    "abstract_en": "Large language models are powerful generalists, yet solving deep and complex problems such as those of the Humanity's Last Exam (HLE) remains both conceptually challenging and computationally expensive. We show that small orchestrators managing other models and a variety of tools can both push the upper bound of intelligence and improve efficiency in solving difficult agentic tasks. We introduce ToolOrchestra, a method for training small orchestrators that coordinate intelligent tools. ToolOrchestra explicitly uses reinforcement learning with outcome-, efficiency-, and user-preference-aware rewards. Using ToolOrchestra, we produce Orchestrator, an 8B model that achieves higher accuracy at lower cost than previous tool-use agents while aligning with user preferences on which tools are to be used for a given query. On HLE, Orchestrator achieves a score of 37.1%, outperforming GPT-5 (35.1%) while being 2.5x more efficient. On tau2-Bench and FRAMES, Orchestrator surpasses GPT-5 by a wide margin while using only about 30% of the cost. Extensive analysis shows that Orchestrator achieves the best trade-off between performance and cost under multiple metrics, and generalizes robustly to unseen tools. These results demonstrate that composing diverse tools with a lightweight orchestration model is both more efficient and more effective than existing methods, paving the way for practical and scalable tool-augmented reasoning systems.",
+    "authors": [
+      "Hongjin Su",
+      "Shizhe Diao",
+      "Ximing Lu",
+      "Mingjie Liu",
+      "Jiacheng Xu"
+    ],
+    "affiliation": "cs.CL",
+    "date": "2025-11-26",
+    "pdf_url": "https://arxiv.org/pdf/2511.21689v1",
+    "likes": 0,
+    "isLiked": false,
+    "collections": 0,
+    "isCollected": false,
+    "comments": [],
+    "qa": [],
+    "expanded": false,
+    "isTranslated": false
+  },
+  {
+    "id": "2511.21688v1",
+    "orig_title": "G$^2$VLM: Geometry Grounded Vision Language Model with Unified 3D Reconstruction and Spatial Reasoning",
+    "tags": [
+      "CV",
+      "AI",
+      "CL"
+    ],
+    "userTags": [],
+    "coverGradient": "bg-gradient-to-br from-slate-700 to-slate-900",
+    "summary": {
+      "innovation": "G²VLM通过统一3D重建与空间推理，利用学习到的3D视觉几何特征增强空间理解能力。"
+    },
+    "abstract_zh": "视觉语言模型（VLMs）在空间智能方面仍缺乏鲁棒性，在空间理解和推理任务上表现不佳。我们将这一差距归因于缺乏能够从2D图像重建3D空间的可视几何学习过程。我们提出了G²VLM，一种基于几何的视觉语言模型，它连接了空间智能的两个基本方面：空间3D重建和空间理解。G²VLM原生利用学习到的3D视觉几何特征，通过上下文学习和交错推理直接预测3D属性并增强空间推理任务。我们的统一设计在空间理解方面具有高度可扩展性：它在丰富的多视图图像和视频数据上进行训练，同时利用通常仅从难以收集的注释中获得的3D视觉先验的优势。实验结果表明，G²VLM在这两项任务上都很熟练，在3D重建方面达到了与最先进的前馈模型相当的结果，并在空间理解和推理任务上取得了更好或具有竞争力的结果。通过将语义强大的VLM与低层次3D视觉任务统一起来，我们希望G²VLM能够成为社区的强大基准，并解锁更多未来应用，如3D场景编辑。",
+    "abstract_en": "Vision-Language Models (VLMs) still lack robustness in spatial intelligence, demonstrating poor performance on spatial understanding and reasoning tasks. We attribute this gap to the absence of a visual geometry learning process capable of reconstructing 3D space from 2D images. We present G$^2$VLM, a geometry grounded vision-language model that bridges two fundamental aspects of spatial intelligence: spatial 3D reconstruction and spatial understanding. G$^2$VLM natively leverages learned 3D visual geometry features to directly predict 3D attributes and enhance spatial reasoning tasks via in-context learning and interleaved reasoning. Our unified design is highly scalable for spatial understanding: it trains on abundant multi-view image and video data, while simultaneously leveraging the benefits of 3D visual priors that are typically only derived from hard-to-collect annotations. Experimental results demonstrate G$^2$VLM is proficient in both tasks, achieving comparable results to state-of-the-art feed-forward 3D reconstruction models and achieving better or competitive results across spatial understanding and reasoning tasks. By unifying a semantically strong VLM with low-level 3D vision tasks, we hope G$^2$VLM can serve as a strong baseline for the community and unlock more future applications, such as 3D scene editing.",
+    "authors": [
+      "Wenbo Hu",
+      "Jingli Lin",
+      "Yilin Long",
+      "Yunlong Ran",
+      "Lihan Jiang"
+    ],
+    "affiliation": "cs.CV",
+    "date": "2025-11-26",
+    "pdf_url": "https://arxiv.org/pdf/2511.21688v1",
+    "likes": 0,
+    "isLiked": false,
+    "collections": 0,
+    "isCollected": false,
+    "comments": [],
+    "qa": [],
+    "expanded": false,
+    "isTranslated": false
+  },
+  {
+    "id": "2511.21686v1",
+    "orig_title": "Matrix: Peer-to-Peer Multi-Agent Synthetic Data Generation Framework",
+    "tags": [
+      "CL",
+      "AI",
+      "LG"
+    ],
+    "userTags": [],
+    "coverGradient": "bg-gradient-to-br from-emerald-500 to-teal-600",
+    "summary": {
+      "innovation": "Matrix框架采用去中心化的点对点架构，通过分布式队列传递消息，消除中央协调器瓶颈。"
+    },
+    "abstract_zh": "合成数据在训练大语言模型时变得越来越重要，特别是在真实数据稀缺、昂贵或涉及隐私的情况下。许多此类生成任务需要协调的多智能体工作流，其中专门的智能体协作生成质量更高、多样性更强、结构更丰富的数据。然而，现有的多智能体合成框架通常依赖于中央协调器，造成可扩展性瓶颈，或者针对特定领域硬编码，限制了灵活性。我们提出了Matrix，一个去中心化框架，将控制流和数据流都表示为通过分布式队列传递的序列化消息。这种点对点设计消除了中央协调器。每个任务通过轻量级智能体独立推进，而计算密集型操作（如LLM推理或容器化环境）由分布式服务处理。基于Ray构建，Matrix可扩展到数万个并发智能体工作流，并提供模块化、可配置的设计，能够轻松适应广泛的数据生成工作流。我们在多种合成场景中评估Matrix，例如多智能体协作对话、基于网络的推理数据提取以及客户服务环境中的工具使用轨迹生成。在所有情况下，Matrix在相同硬件资源下实现了2到15倍的数据生成吞吐量提升，且不牺牲输出质量。",
+    "abstract_en": "Synthetic data has become increasingly important for training large language models, especially when real data is scarce, expensive, or privacy-sensitive. Many such generation tasks require coordinated multi-agent workflows, where specialized agents collaborate to produce data that is higher quality, more diverse, and structurally richer. However, existing frameworks for multi-agent synthesis often depend on a centralized orchestrator, creating scalability bottlenecks, or are hardcoded for specific domains, limiting flexibility. We present \\textbf{Matrix}, a decentralized framework that represents both control and data flow as serialized messages passed through distributed queues. This peer-to-peer design eliminates the central orchestrator. Each task progresses independently through lightweight agents, while compute-intensive operations, such as LLM inference or containerized environments, are handled by distributed services. Built on Ray, Matrix scales to tens of thousands of concurrent agentic workflows and provides a modular, configurable design that enables easy adaptation to a wide range of data generation workflows. We evaluate Matrix across diverse synthesis scenarios, such as multi-agent collaborative dialogue, web-based reasoning data extraction, and tool-use trajectory generation in customer service environments. In all cases, Matrix achieves $2$--$15\\times$ higher data generation throughput under identical hardware resources, without compromising output quality.",
+    "authors": [
+      "Dong Wang",
+      "Yang Li",
+      "Ansong Ni",
+      "Ching-Feng Yeh",
+      "Youssef Emad"
+    ],
+    "affiliation": "cs.CL",
+    "date": "2025-11-26",
+    "pdf_url": "https://arxiv.org/pdf/2511.21686v1",
+    "likes": 0,
+    "isLiked": false,
+    "collections": 0,
+    "isCollected": false,
+    "comments": [],
+    "qa": [],
+    "expanded": false,
+    "isTranslated": false
+  },
+  {
+    "id": "2511.21681v1",
+    "orig_title": "Seeing without Pixels: Perception from Camera Trajectories",
+    "tags": [
+      "CV"
+    ],
+    "userTags": [],
+    "coverGradient": "bg-gradient-to-br from-emerald-500 to-teal-600",
+    "summary": {
+      "innovation": "首次提出仅通过相机轨迹感知视频内容，并开发了CamFormer编码器实现轨迹与语言的跨模态对齐。"
+    },
+    "abstract_zh": "能否不通过像素，仅从相机轨迹——即其在空间中穿行的路径——来感知视频内容？本文首次系统性地研究了这个看似不可能的问题。为此，我们提出了一个对比学习框架来训练CamFormer，这是一个专用的编码器，将相机位姿轨迹投影到联合嵌入空间，使其与自然语言对齐。我们发现，与表面上的简单性相反，相机轨迹是一个极具信息量的信号，能够揭示视频内容。换句话说，“你如何移动”确实可以揭示“你在做什么”（自我中心）或“你在观察什么”（他者中心）。我们在多种下游任务上展示了我们学习的CamFormer嵌入的通用性，从跨模态对齐到分类和时间分析。重要的是，我们的表示在不同相机位姿估计方法中都具有鲁棒性，包括高保真多传感器和标准仅RGB估计器。我们的研究确立了相机轨迹作为一种轻量、鲁棒且通用的感知视频内容的模态。",
+    "abstract_en": "Can one perceive a video's content without seeing its pixels, just from the camera trajectory-the path it carves through space? This paper is the first to systematically investigate this seemingly implausible question. Towards this end, we propose a contrastive learning framework to train CamFormer, a dedicated encoder that projects camera pose trajectories into a joint embedding space, aligning them with natural language. We find that, contrary to its apparent simplicity, the camera trajectory is a remarkably informative signal to uncover video content. In other words, \"how you move\" can indeed reveal \"what you are doing\" (egocentric) or \"observing\" (exocentric). We demonstrate the versatility of our learned CamFormer embeddings on a diverse suite of downstream tasks, ranging from cross-modal alignment to classification and temporal analysis. Importantly, our representations are robust across diverse camera pose estimation methods, including both high-fidelity multi-sensored and standard RGB-only estimators. Our findings establish camera trajectory as a lightweight, robust, and versatile modality for perceiving video content.",
+    "authors": [
+      "Zihui Xue",
+      "Kristen Grauman",
+      "Dima Damen",
+      "Andrew Zisserman",
+      "Tengda Han"
+    ],
+    "affiliation": "cs.CV",
+    "date": "2025-11-26",
+    "pdf_url": "https://arxiv.org/pdf/2511.21681v1",
+    "likes": 0,
+    "isLiked": false,
+    "collections": 0,
+    "isCollected": false,
+    "comments": [],
+    "qa": [],
+    "expanded": false,
+    "isTranslated": false
+  },
+  {
+    "id": "2511.21678v1",
+    "orig_title": "Agentic Learner with Grow-and-Refine Multimodal Semantic Memory",
+    "tags": [
+      "AI",
+      "LG"
+    ],
+    "userTags": [],
+    "coverGradient": "bg-gradient-to-br from-emerald-500 to-teal-600",
+    "summary": {
+      "innovation": "提出双流记忆框架ViLoMem，分别编码视觉分心模式和逻辑推理错误，实现多模态语义记忆的渐进式积累与更新。"
+    },
+    "abstract_zh": "多模态大语言模型在孤立查询上展现出强大的推理能力，但它们每次都是从头开始解决问题，常常重复相同的错误。现有的记忆增强智能体主要存储过去的轨迹以供重用。然而，基于轨迹的记忆存在简洁性偏差，逐渐丢失重要的领域知识。更关键的是，即使在真正的多模态问题解决场景中，它也只记录了过去行为的单模态痕迹，未能保留视觉注意力和逻辑推理如何共同促成解决方案。这与人类认知根本不符：语义记忆既是多模态的又是整合的，通过协调但不同的表征流来保存视觉和抽象知识。因此，我们引入了ViLoMem，一个双流记忆框架，构建紧凑的、基于图式的记忆。它分别编码视觉分心模式和逻辑推理错误，使多模态大语言模型能够从成功和失败的经验中学习。遵循增长与精炼原则，该系统逐步积累和更新多模态语义知识——保留稳定、可泛化的策略，同时避免灾难性遗忘。在六个多模态基准测试中，ViLoMem持续提高了pass@1准确率，并显著减少了重复的视觉和逻辑错误。消融实验证实了具有明确分心-幻觉分离的双流记忆的必要性，展示了错误感知多模态记忆在终身和跨领域智能体学习中的价值。我们的项目页面将在https://weihao-bo.github.io/ViLoMeo-page 提供。",
+    "abstract_en": "MLLMs exhibit strong reasoning on isolated queries, yet they operate de novo -- solving each problem independently and often repeating the same mistakes. Existing memory-augmented agents mainly store past trajectories for reuse. However, trajectory-based memory suffers from brevity bias, gradually losing essential domain knowledge. More critically, even in truly multimodal problem-solving settings, it records only a single-modality trace of past behavior, failing to preserve how visual attention and logical reasoning jointly contributed to the solution. This is fundamentally misaligned with human cognition: semantic memory is both multimodal and integrated, preserving visual and abstract knowledge through coordinated but distinct representational streams. We thus introduce ViLoMem, a dual-stream memory framework that constructs compact, schema-based memory. It separately encodes visual distraction patterns and logical reasoning errors, enabling MLLMs to learn from their successful and failed experiences. Following a grow-and-refine principle, the system incrementally accumulates and updates multimodal semantic knowledge -- preserving stable, generalizable strategies while avoiding catastrophic forgetting. Across six multimodal benchmarks, ViLoMem consistently improves pass@1 accuracy and substantially reduces repeated visual and logical errors. Ablations confirm the necessity of dual-stream memory with explicit distraction--hallucination separation, demonstrating the value of error-aware multimodal memory for lifelong and cross-domain agentic learning. Our project page will be available at https://weihao-bo.github.io/ViLoMeo-page.",
+    "authors": [
+      "Weihao Bo",
+      "Shan Zhang",
+      "Yanpeng Sun",
+      "Jingjing Wu",
+      "Qunyi Xie"
+    ],
+    "affiliation": "cs.AI",
+    "date": "2025-11-26",
+    "pdf_url": "https://arxiv.org/pdf/2511.21678v1",
+    "likes": 0,
+    "isLiked": false,
+    "collections": 0,
+    "isCollected": false,
+    "comments": [],
+    "qa": [],
+    "expanded": false,
+    "isTranslated": false
+  },
+  {
+    "id": "2511.21675v1",
+    "orig_title": "On Evolution-Based Models for Experimentation Under Interference",
+    "tags": [
+      "LG"
+    ],
+    "userTags": [],
+    "coverGradient": "bg-gradient-to-br from-emerald-500 to-teal-600",
+    "summary": {
+      "innovation": "提出基于演化模型的方法，通过观察结果在多轮干预下的变化来估计因果效应，无需恢复精确网络结构。"
+    },
+    "abstract_zh": "网络系统中的因果效应估计对于数据驱动决策至关重要。在此类设置中，对一个单元的干预可能会溢出到其他单元，而在复杂的物理或社会系统中，驱动这些干扰结构的交互路径在很大程度上仍未被观察到。我们认为，为了识别群体层面的因果效应，没有必要恢复确切的网络结构；相反，只需描述这些交互如何促成结果的演化即可。基于这一原则，我们研究了一种基于演化的方法，该方法调查结果在观察轮次中如何响应干预而变化，从而弥补缺失的网络信息。使用暴露映射的视角，我们给出了结果的经验分布何时遵循低维递归方程的公理化特征，并识别了此类演化映射存在的最小结构条件。我们将其框架化为双重差分法的分布对应物。它不假设个体单元的平行路径，而是利用跨处理场景的平行演化模式来估计反事实轨迹。一个关键见解是，处理随机化的作用不仅仅是消除潜在混杂因素；它诱导了对隐藏干扰通道的隐式采样，从而能够一致地学习异质溢出效应。我们强调因果消息传递作为该方法在密集网络中的实例化，同时扩展到更一般的干扰结构，包括影响者网络，其中一小部分单元驱动了大部分溢出。最后，我们讨论了该方法的局限性，表明强时间趋势或内生干扰可能会破坏识别。",
+    "abstract_en": "Causal effect estimation in networked systems is central to data-driven decision making. In such settings, interventions on one unit can spill over to others, and in complex physical or social systems, the interaction pathways driving these interference structures remain largely unobserved. We argue that for identifying population-level causal effects, it is not necessary to recover the exact network structure; instead, it suffices to characterize how those interactions contribute to the evolution of outcomes. Building on this principle, we study an evolution-based approach that investigates how outcomes change across observation rounds in response to interventions, hence compensating for missing network information. Using an exposure-mapping perspective, we give an axiomatic characterization of when the empirical distribution of outcomes follows a low-dimensional recursive equation, and identify minimal structural conditions under which such evolution mappings exist. We frame this as a distributional counterpart to difference-in-differences. Rather than assuming parallel paths for individual units, it exploits parallel evolution patterns across treatment scenarios to estimate counterfactual trajectories. A key insight is that treatment randomization plays a role beyond eliminating latent confounding; it induces an implicit sampling from hidden interference channels, enabling consistent learning about heterogeneous spillover effects. We highlight causal message passing as an instantiation of this method in dense networks while extending to more general interference structures, including influencer networks where a small set of units drives most spillovers. Finally, we discuss the limits of this approach, showing that strong temporal trends or endogenous interference can undermine identification.",
+    "authors": [
+      "Sadegh Shirani",
+      "Mohsen Bayati"
+    ],
+    "affiliation": "stat.ML",
+    "date": "2025-11-26",
+    "pdf_url": "https://arxiv.org/pdf/2511.21675v1",
+    "likes": 0,
+    "isLiked": false,
+    "collections": 0,
+    "isCollected": false,
+    "comments": [],
+    "qa": [],
+    "expanded": false,
+    "isTranslated": false
+  },
+  {
+    "id": "2511.21673v1",
+    "orig_title": "Revolutionizing Glioma Segmentation & Grading Using 3D MRI - Guided Hybrid Deep Learning Models",
+    "tags": [
+      "CV"
+    ],
+    "userTags": [],
+    "coverGradient": "bg-gradient-to-br from-emerald-500 to-teal-600",
+    "summary": {
+      "innovation": "结合U-Net分割与DenseNet-VGG分类网络，集成多头和空间通道注意力机制，提升胶质瘤分割与分级的准确性。"
+    },
+    "abstract_zh": "胶质瘤是一种死亡率高的脑肿瘤类型，早期准确诊断对治疗干预至关重要。为解决这一难题，本研究提出了一种混合深度学习模型，该模型整合了基于U-Net的分割网络和结合多头注意力与空间通道注意力的混合DenseNet-VGG分类网络。分割模型将在空间和上下文信息引导下，精确划分3D MRI数据中的肿瘤区域。分类网络结合了DenseNet和VGG的分支，利用分割后的肿瘤区域，通过注意力机制聚焦于临床相关特征。通过预处理步骤（包括归一化、重采样和数据增强），模型成功处理了高维3D MRI数据。通过多种指标评估框架：分割性能指标为Dice系数和平均交并比（IoU），分类性能指标为准确率、精确率、召回率和F1分数。实验证明，所提出的混合框架在肿瘤分割中达到98%的Dice系数，分类准确率达99%，优于传统CNN模型和无注意力方法。多头注意力机制增强了临床关键肿瘤特征的优先级，提高了可解释性和准确性。结果表明，该框架在促进临床医生及时可靠地诊断和分级胶质瘤方面潜力巨大，有助于优化患者治疗计划。",
+    "abstract_en": "Gliomas are brain tumor types that have a high mortality rate which means early and accurate diagnosis is important for therapeutic intervention for the tumors. To address this difficulty, the proposed research will develop a hybrid deep learning model which integrates U-Net based segmentation and a hybrid DenseNet-VGG classification network with multihead attention and spatial-channel attention capabilities. The segmentation model will precisely demarcate the tumors in a 3D volume of MRI data guided by spatial and contextual information. The classification network which combines a branch of both DenseNet and VGG, will incorporate the demarcated tumor on which features with attention mechanisms would be focused on clinically relevant features. High-dimensional 3D MRI data could successfully be utilized in the model through preprocessing steps which are normalization, resampling, and data augmentation. Through a variety of measures the framework is evaluated: measures of performance in segmentation are Dice coefficient and Mean Intersection over Union (IoU) and measures of performance in classification are accuracy precision, recall, and F1-score. The hybrid framework that has been proposed has demonstrated through physical testing that it has the capability of obtaining a Dice coefficient of 98% in tumor segmentation, and 99% on classification accuracy, outperforming traditional CNN models and attention-free methods. Utilizing multi-head attention mechanisms enhances notions of priority in aspects of the tumor that are clinically significant, and enhances interpretability and accuracy. The results suggest a great potential of the framework in facilitating the timely and reliable diagnosis and grading of glioma by clinicians is promising, allowing for better planning of patient treatment.",
+    "authors": [
+      "Pandiyaraju V",
+      "Sreya Mynampati",
+      "Abishek Karthik",
+      "Poovarasan L",
+      "D. Saraswathi"
+    ],
+    "affiliation": "cs.CV",
+    "date": "2025-11-26",
+    "pdf_url": "https://arxiv.org/pdf/2511.21673v1",
+    "likes": 0,
+    "isLiked": false,
+    "collections": 0,
+    "isCollected": false,
+    "comments": [],
+    "qa": [],
+    "expanded": false,
+    "isTranslated": false
+  }
+]
